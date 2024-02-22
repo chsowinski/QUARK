@@ -24,6 +24,7 @@ from qiskit.opflow import PauliSumOp
 from qiskit_optimization.applications import OptimizationApplication
 from qiskit import IBMQ
 from qiskit.providers.ibmq import least_busy
+from qiskit_ibm_runtime import QiskitRuntimeService, RuntimeJob
 
 from modules.solvers.Solver import *
 from utils import start_time_measurement, end_time_measurement
@@ -209,8 +210,27 @@ class QiskitQAOA(Solver):
                                  quantum_instance=self._get_quantum_instance(device_wrapper))
 
         # run actual optimization algorithm
-        result = algorithm.compute_minimum_eigenvalue(ising_op) 
+        if device_wrapper == 'ibm_eagle':
+            runtime_service = QiskitRuntimeService()
+            options = {'backend_name': self._get_quantum_instance(device_wrapper)}
+            problem = {
+                'operator': ising_op,
+                'optimizer': {'name': config["optimizer"], 'maxiter': config["iterations"]},
+                'ansatz': {'name': 'TwoLocal', 'rotation_blocks': ['ry', 'rz'], 'entanglement_blocks': 'cz'},
+                'initial_point': [0.01] * 2 * algorithm.ansatz.num_qubits
+            }
+            job = runtime_service.run(
+                program_id="qaoa",
+                inputs=problem,
+                options=options
+            )
+            result = job.result()
+        
+        else:
+            result = algorithm.compute_minimum_eigenvalue(ising_op) 
+
         best_bitstring = self._get_best_solution(result)
+        
         return best_bitstring, end_time_measurement(start), {}
 
     @staticmethod
@@ -225,7 +245,7 @@ class QiskitQAOA(Solver):
             # IBMQ.save_account(TOKEN) # has to be run the very first time using the IBM Quantum Plattform, don´t forget to insert your API Token
             IBMQ.load_account()
             provider = IBMQ.get_provider(hub='ibm-q')
-            backends_eagle = provider.backends(operational=True, simulator=False)
+            backends_eagle = provider.backends(operational=True, simulator=True)
             backend = least_busy(backends_eagle)
         else:
             logging.info("Using CPU simulator")

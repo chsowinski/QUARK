@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 import dwave.samplers
+# from dwave.system import LeapHybridCQMSampler
 
 from modules.devices.Device import Device
 from modules.Core import Core
@@ -29,6 +30,8 @@ class SimulatedAnnealingSampler(Device):
         """
         super().__init__(device_name="simulated annealer")
         self.device = dwave.samplers.SimulatedAnnealingSampler()
+        #token = # specify your token
+        #self.device = LeapHybridCQMSampler(token=token) #Use of the D-Wave Hybrid Solver
         self.submodule_options = []
 
     @staticmethod

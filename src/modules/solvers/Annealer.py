@@ -34,9 +34,9 @@ class Annealer(Solver):
         if option == "Simulated Annealer":
             from modules.devices.SimulatedAnnealingSampler import SimulatedAnnealingSampler  # pylint: disable=C0415
             return SimulatedAnnealingSampler()
-        elif option == "Fujitsu Digital Annealer":
-            from dadk.Optimizer import Solver  # pylint: disable=C0415
-            return Solver()
+        # elif option == "Fujitsu Digital Annealer":
+        #     from dadk.Optimizer import Solver  # pylint: disable=C0415
+        #     return Solver()
         else:
             raise NotImplementedError(f"Device Option {option}  not implemented")
 
@@ -114,10 +114,10 @@ class Annealer(Solver):
             # response = sampler.sample_qubo(Q, num_reads=config['number_of_reads'], answer_mode="histogram")
             # # Add timings https://docs.dwavesys.com/docs/latest/c_qpu_timing.html
             # additional_solver_information.update(response.info["additionalMetadata"]["dwaveMetadata"]["timing"])
-        elif device_wrapper.device_name != "Fujitsu Digital Annealer"
-            response = device.set_params(num_reads = config['number_of_reads'])
-            response = device.solve_qubo(Q)
-            sample = response
+        # elif device_wrapper.device_name != "Fujitsu Digital Annealer"
+        #     response = device.set_params(num_reads = config['number_of_reads'])
+        #     response = device.solve_qubo(Q)
+        #     sample = response
         else:
             # This is for D-Wave simulated Annealer
             response = device.sample_qubo(Q, num_reads=config['number_of_reads'])
