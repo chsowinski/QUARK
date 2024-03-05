@@ -73,7 +73,7 @@ class QiskitQAOA(Solver):
             from modules.devices.HelperClass import HelperClass  # pylint: disable=C0415
             return HelperClass("qasm_simulator_gpu")
         elif option == "ibm_eagle":
-            from modules.devices.HelperClass import HelperClass
+            from modules.devices.HelperClass import HelperClass  # pylint: disable=C0415
             return HelperClass("ibm_eagle")
         else:
             raise NotImplementedError(f"Device Option {option} not implemented")
@@ -115,8 +115,8 @@ class QiskitQAOA(Solver):
                 "description": "How many shots do you need?"
             },
             "iterations": {  # number measurements to make on circuit
-                "values": [10, 20, 50, 75],
-                "description": "How many iterations do you need?"
+                "values": [1, 5, 10, 20, 50, 75],
+                "description": "How many iterations do you need? Warning: When using the IBM Eagle Devices you should not use a high number of iterations since that would result in a waiting time of up to mulitple days!"
             },
             "depth": {
                 "values": [2, 3, 4, 5, 10, 20],
@@ -185,23 +185,16 @@ class QiskitQAOA(Solver):
         t = mapped_problem['t']
         start = start_time_measurement()
         ising_op = self._get_pauli_op((t, J))
-        eagle_max_iter = 1
         if config["method"] == "classic":
             algorithm = NumPyMinimumEigensolver()
         else:
             optimizer = None
             if config["optimizer"] == "COBYLA":
                 optimizer = COBYLA(maxiter=config["iterations"])
-                if device_wrapper.device == 'ibm_eagle':
-                    optimizer = COBYLA(maxiter=eagle_max_iter)
             elif config["optimizer"] == "POWELL":
                 optimizer = POWELL(maxiter=config["iterations"])
-                if device_wrapper.device == 'ibm_eagle':
-                    optimizer = COBYLA(maxiter=eagle_max_iter)
             elif config["optimizer"] == "SPSA":
                 optimizer = SPSA(maxiter=config["iterations"])
-                if device_wrapper.device == 'ibm_eagle':
-                    optimizer = COBYLA(maxiter=eagle_max_iter)
             if config["method"] == "vqe":
                 ry = TwoLocal(ising_op.num_qubits, "ry", "cz", reps=config["depth"], entanglement="full")
                 algorithm = VQE(ry, optimizer=optimizer, quantum_instance=self._get_quantum_instance(device_wrapper))
@@ -210,17 +203,17 @@ class QiskitQAOA(Solver):
                                  quantum_instance=self._get_quantum_instance(device_wrapper))
 
         # run actual optimization algorithm
-        if device_wrapper == 'ibm_eagle':
+        if device_wrapper.device == 'ibm_eagle':
             runtime_service = QiskitRuntimeService()
-            options = {'backend_name': self._get_quantum_instance(device_wrapper)}
+            options = {'backend': "ibmq_qasm_simulator"}
             problem = {
                 'operator': ising_op,
                 'optimizer': {'name': config["optimizer"], 'maxiter': config["iterations"]},
-                'ansatz': {'name': 'TwoLocal', 'rotation_blocks': ['ry', 'rz'], 'entanglement_blocks': 'cz'},
+                'ansatz': {'name': 'QAOA', 'rotation_blocks': ['ry', 'rz'], 'entanglement_blocks': 'cz'},
                 'initial_point': [0.01] * 2 * algorithm.ansatz.num_qubits
             }
             job = runtime_service.run(
-                program_id="qaoa",
+                program_id="circuit-runner",
                 inputs=problem,
                 options=options
             )
