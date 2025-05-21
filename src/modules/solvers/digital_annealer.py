@@ -106,11 +106,9 @@ class DigitalAnnealer(Solver):
 
         q = mapped_problem['Q']
         bp = BinPol()            
-        for (i, j), coeff in q.items():
-            if i == j:
-                bp.add_term([f"x{i}"], coeff)        # Linear term
-            else:
-                bp.add_term([f"x{i}", f"x{j}"], coeff)  # Quadratic term
+        for (var1, var2), coeff in q.items():
+            var_list = [f"x_{var1[0]}_{var1[1]}"] if var1 == var2 else [f"x_{var1[0]}_{var1[1]}", f"x_{var2[0]}_{var2[1]}"]
+            bp.add_term(var_list, coeff)
         additional_solver_information = {}
         device = device_wrapper.get_device()
         device.number_runs = config['number_runs']
