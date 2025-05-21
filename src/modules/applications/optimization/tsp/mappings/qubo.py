@@ -32,7 +32,7 @@ class QUBO(Mapping):
         Constructor method.
         """
         super().__init__()
-        self.submodule_options = ["Annealer"]
+        self.submodule_options = ["Annealer","Digital Annealer"]
 
     @staticmethod
     def get_requirements() -> list[dict]:
@@ -43,7 +43,7 @@ class QUBO(Mapping):
         """
         return [
             {"name": "networkx", "version": "3.4.2"},
-            {"name": "dwave_networkx", "version": "0.8.15"}
+            {"name": "dwave_networkx", "version": "0.8.15"},
         ]
 
     def get_parameter_options(self) -> dict:
@@ -121,5 +121,8 @@ class QUBO(Mapping):
         if option == "Annealer":
             from modules.solvers.annealer import Annealer  # pylint: disable=C0415
             return Annealer()
+        elif option == "Digital Annealer":
+            from modules.solvers.digital_annealer import DigitalAnnealer # pylint: disable=C0415
+            return DigitalAnnealer()
         else:
             raise NotImplementedError(f"Solver Option {option} not implemented")

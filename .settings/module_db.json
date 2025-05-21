@@ -1,7 +1,7 @@
 {
-  "build_number": 22,
-  "build_date": "05-05-2025 15:07:28",
-  "git_revision_number": "4bc3e398493a935a3a9c0bb4efdbd95428c31dcd",
+  "build_number": 27,
+  "build_date": "21-05-2025 11:49:10",
+  "git_revision_number": "9a889eb110648773436fe6a79dd634c993c7d8b4",
   "modules": [
     {
       "name": "PVC",
@@ -1900,6 +1900,39 @@
                     {
                       "name": "dwave-samplers",
                       "version": "1.4.0"
+                    }
+                  ],
+                  "submodules": []
+                }
+              ]
+            },
+            {
+              "name": "Digital Annealer",
+              "class": "DigitalAnnealer",
+              "args": {},
+              "module": "modules.solvers.digital_annealer",
+              "requirements": [],
+              "submodules": [
+                {
+                  "name": "Digital Annealer",
+                  "class": "DigitalAnnealerCPU",
+                  "args": {},
+                  "module": "modules.devices.digital_annealer_cpu",
+                  "requirements": [
+                    {
+                      "name": "dadk"
+                    }
+                  ],
+                  "submodules": []
+                },
+                {
+                  "name": "Digital Annealer V3c",
+                  "class": "DigitalAnnealerV3c",
+                  "args": {},
+                  "module": "modules.devices.digital_annealer_V3c",
+                  "requirements": [
+                    {
+                      "name": "dadk"
                     }
                   ],
                   "submodules": []
