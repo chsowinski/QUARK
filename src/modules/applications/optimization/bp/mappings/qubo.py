@@ -38,7 +38,7 @@ class QUBO(Mapping):
         Constructor method
         """
         super().__init__()
-        self.submodule_options = ["Annealer","Digital Annealer"]
+        self.submodule_options = ["Annealer", "Digital Annealer"]
 
     @staticmethod
     def get_requirements() -> list[dict]:
@@ -167,7 +167,7 @@ class QUBO(Mapping):
             from modules.solvers.annealer import Annealer  # pylint: disable=C0415
             return Annealer()
         elif option == "Digital Annealer":
-            from modules.solvers.digital_annealer import DigitalAnnealer # pylint: disable=C0415
+            from modules.solvers.digital_annealer import DigitalAnnealer  # pylint: disable=C0415
             return DigitalAnnealer()
         else:
             raise NotImplementedError(f"Solver Option {option} not implemented")
