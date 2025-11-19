@@ -28,7 +28,7 @@ class DigitalAnnealerV3c(Device):
         Constructor method.
         """
         super().__init__(device_name="Digital Annealer V3c")
-        connection_parameter = load_connection_parameter('../Digital_Annealer/annealer.prf') 
+        connection_parameter = load_connection_parameter('../Digital_Annealer/annealer.prf')
         self.device = QUBOSolverDAv3c(time_limit_sec=1800, num_group=10, connection_parameter=connection_parameter)
         self.submodule_options = []
 
